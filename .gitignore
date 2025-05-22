@@ -18,7 +18,6 @@ target/
 *.iws
 *.iml
 *.ipr
-application.properties
 
 ### NetBeans ###
 /nbproject/private/
@@ -32,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.idea/
+*.iml
+target/
+application.properties
