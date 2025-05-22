@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Student Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .container {
+        max-width: 1200px;
+    }
+    .table {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .alert-dismissible {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .btn-custom {
+        transition: all 0.3s ease;
+    }
+    .btn-custom:hover {
+        transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Student Management System</h1>
+
+  <!-- Form tìm kiếm -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <form th:action="@{/students/search}" method="get" class="input-group">
+        <input type="text" name="keyword" class="form-control" placeholder="Search by name..." required>
+        <button type="submit" class="btn btn-primary btn-custom">Search</button>
+      </form>
+    </div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add New Student</button>
+    </div>
+  </div>
+
+  <!-- Thông báo -->
+  <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Bảng danh sách sinh viên -->
+  <div class="card">
+    <div class="card-body">
+      <table class="table table-hover">
+        <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Grade</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${students}">
+          <td th:text="${student.id}"></td>
+          <td th:text="${student.name}"></td>
+          <td th:text="${student.email}"></td>
+          <td th:text="${student.grade}"></td>
+          <td>
+            <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#editStudentModal" th:attr="data-id=${student.id},data-name=${student.name},data-email=${student.email},data-grade=${student.grade}">Edit</button>
+            <a th:href="@{/students/delete/{id}(id=${student.id})}" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal thêm sinh viên -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addStudentModalLabel">Add New Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/students}" th:object="${student}" method="post">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" th:field="*{email}" required>
+          </div>
+          <div class="mb-3">
+            <label for="grade" class="form-label">Grade</label>
+            <input type="number" step="0.01" class="form-control" id="grade" th:field="*{grade}" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-custom">Save</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal chỉnh sửa sinh viên -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editStudentModalLabel">Edit Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editStudentForm" method="post">
+          <input type="hidden" id="editId" name="id">
+          <div class="mb-3">
+            <label for="editName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="editName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="editEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="editEmail" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="editGrade" class="form-label">Grade</label>
+            <input type="number" step="0.01" class="form-control" id="editGrade" name="grade" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-custom">Update</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  // Điền dữ liệu vào modal chỉnh sửa
+  $('#editStudentModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var id = button.data('id');
+      var name = button.data('name');
+      var email = button.data('email');
+      var grade = button.data('grade');
+
+      var modal = $(this);
+      modal.find('#editId').val(id);
+      modal.find('#editName').val(name);
+      modal.find('#editEmail').val(email);
+      modal.find('#editGrade').val(grade);
+      modal.find('#editStudentForm').attr('action', '/students/' + id);
+  });
+
+  // Tự động ẩn thông báo sau 3 giây
+  setTimeout(function() {
+      $('.alert').alert('close');
+  }, 3000);
+</script>
+</body>
+</html>
