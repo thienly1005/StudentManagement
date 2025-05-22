@@ -1,11 +1,11 @@
 # Stage 1: Build ứng dụng
-FROM maven:3.9.9-openjdk-17 AS build
+FROM maven:3.8.7-openjdk-18-slim AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage 2: Chạy ứng dụng
-FROM openjdk:17-jdk-slim
+FROM openjdk:18-jdk-slim
 WORKDIR /app
 COPY --from=build /app/target/StudentManagement-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
