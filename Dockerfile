@@ -9,4 +9,4 @@ FROM openjdk:18-jdk-slim
 WORKDIR /app
 COPY --from=build /app/target/StudentManagement-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-CMD java -Dserver.port=$PORT -jar app.jar
+CMD CMD ["java", "-jar", "app.jar"]
