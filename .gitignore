@@ -36,4 +36,3 @@ build/
 .idea/
 *.iml
 target/
-application.properties
